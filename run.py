@@ -1,38 +1,4 @@
-# #! /usr/bin/env python
-# from flask import Flask, render_template, request, jsonify
-# import summarization
 
-# app = Flask(__name__)
-
-# @app.route('/textsummarization', methods=['GET'])
-# def classify():
-#    return render_template('summarization.html')
-
-# # service use for summarize the given text
-# @app.route('/summarize', methods=['POST'])
-# def summarize():
-#     response = None
-#     if request.method == 'POST' :
-#         try:
-#             req_data = request.get_json()
-#             print (req_data)
-#             print (req_data['top_sentences'])
-#             response = summarization.summarize(req_data['data'],int(req_data['top_sentences']))
-#         except Exception as e:
-#             return respond(e)
-       
-#     return respond(None, res=response)
-       
-# def respond(err, res=None):
-#     return_res =  {
-#         'status_code': 400 if err else 200,
-#         'body': err.message if err else res,
-#     }
-#     return jsonify(return_res)
-
-# # start the server with the 'run()' method
-# if __name__ == '__main__':
-#     app.run(debug=True)from __future__ import print_function
 import array
 import string
 import operator
@@ -46,7 +12,7 @@ from nltk.probability import FreqDist
 from flask import Flask, render_template, request #Used to render .html templates
 
 #Webscrapping using BeautifulSoup, not yet implemented
-import bs4 as bs #beautifulsource4
+from bs4 import BeautifulSoup
 from urllib.request import urlopen
 
 class summarize:
@@ -143,13 +109,30 @@ def original_text_form():
 	num_sent = int(request.form['num_sentences']) #Get number of sentence required in summary
 	sum1 = summarize()
 	summary = sum1.get_summary(text, num_sent)
-	print (summary)
 	return render_template("index.html", title = title, original_text = text, output_summary = summary, num_sentences = max_value)
+
+@app.route('/analyse_url',methods=['POST'])
+def fetch_and_analyze():
+	url=request.form['raw_url']
+	page = urlopen(url)
+	soup = BeautifulSoup(page)
+	fetched_text = ' '.join(map(lambda p:p.text,soup.find_all('p')))
+	print(fetched_text)
+	max_value = sent_tokenize(fetched_text)
+	num_sent = int(request.form['num_sentences']) #Get number of sentence required in summary
+	sum1 = summarize()
+	summary = sum1.get_summary(fetched_text, num_sent)
+	return render_template('summarizeLink.html',title='Url Summarization',original_text = fetched_text, output_summary = summary, num_sentences = max_value)
+
 @app.route('/')
 def homepage():
 	title = "Text Summarizer"
 	return render_template("index.html", title = title)
-	
+
+@app.route('/summarize_link')
+def linkSumaary():
+	return render_template('summarizeLink.html')	
+
 if __name__ == "__main__":
 	app.debug = True
 	app.run()

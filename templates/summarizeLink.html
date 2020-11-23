@@ -1,18 +1,15 @@
 {% extends 'base.html' %}
 {% block content  %}
+
 	<section class = "input container" id = "input">
 		<div class="intro jumbotron">
-			<h2>Text Summarizer</h2>
-			<p> You can summarize any text from an article, journal, story
-				and more by simply copying and pasting that text below. The algorithm for 
-				the summarazier will display the output summary based on keywords extracted from the text.
-			</p>			
+			<h2>Text Summarizer of Link</h2>
+						
 		</div>
 		<div class="form-container jumbotron" id-"sum-section">
-			<form action = "/templates" id="sumform" method = "POST">
-				<p>Enter the text you wish to summarize:</p>
-				<textarea maxlength = "50000" name = "input_text" id = "input_text" style="width:600px; 
-				height:250px" value = "{{request.form['input_text']}}" ></textarea>
+			<form action = "/analyse_url" id="linksummary" method = "POST">
+				<p>Enter the Link whose test you wish to summarize:</p>
+				  <input type="text" name="raw_url" placeholder="Enter URL Here" required="true">
 				<p>Enter the summarized number of sentences you like to be outputted: </p>
 				<p>
 					<input type="number" name = "num_sentences" pattern = 
@@ -36,5 +33,5 @@
 		
 	</section>
 
-{% endblock  %}
-
+	
+{% endblock %}
